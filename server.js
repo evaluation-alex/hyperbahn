@@ -28,7 +28,7 @@ var StaticConfig = require('static-config');
 var process = require('process');
 var path = require('path');
 var getRepoInfo = require('git-repo-info');
-var parseArgs = require('minimist');
+// var parseArgs = require('minimist');
 var setTimeout = require('timers').setTimeout;
 var assert = require('assert');
 
@@ -36,23 +36,31 @@ var Application = require('./app.js');
 
 var ABORT_TIMEOUT = 10 * 1000;
 
-if (require.main === module) {
-    main({
-        argv: parseArgs(process.argv.slice(2))
-    });
-}
+// if (require.main === module) {
+//     // const argv = { 
+//     //     _: [],
+//     //     port: 21300,
+//     //     bootstrapFile: '["127.0.0.1:21300","127.0.0.1:21301"]' 
+//     // }
+//     console.log('1.server options : ',parseArgs(process.argv.slice(2)))
+
+//     main({
+//         argv: parseArgs(process.argv.slice(2))
+//     });
+// }
 
 function main(opts) {
     /*eslint no-process-env: 0*/
     var start = Date.now();
 
-    var gitRepo = path.join(__dirname, '.git');
-    var gitSha = getRepoInfo(gitRepo).sha;
+    // var gitRepo = path.join(__dirname, '.git');
+    // var gitSha = getRepoInfo(gitRepo).sha;
 
-    assert(opts.argv.port !== undefined, '--port is required');
+    // assert(opts.argv.port !== undefined, '--port is required');
 
     var config = createConfig();
     opts.processTitle = process.title;
+    // console.log('1.server main application : ',config, opts)
     var app = Application(config, opts);
 
     // attach before throwing exception
@@ -79,16 +87,17 @@ function main(opts) {
         statsd.timing('server.bootstrap-time', now - start);
         statsd.timing('server.startup-time', now - startOfProcess);
 
-        logger.info('autobahn server started', {
-            serverAddress: serverAddr,
-            replAddr: replAddr,
-            gitSha: gitSha,
-            env: process.env,
-            requireTime: start - startOfProcess,
-            bootstrapTime: now - start,
-            startupTime: now - startOfProcess
-        });
+        // logger.info('autobahn server started', {
+        //     serverAddress: serverAddr,
+        //     replAddr: replAddr,
+        //     gitSha: gitSha,
+        //     env: process.env,
+        //     requireTime: start - startOfProcess,
+        //     bootstrapTime: now - start,
+        //     startupTime: now - startOfProcess
+        // });
     });
+    return app
 }
 
 function abort() {
@@ -105,3 +114,17 @@ function createConfig() {
         ]
     });
 }
+///////////
+const argv = { 
+    _: [],
+    port: 21300,
+    bootstrapFile: '["127.0.0.1:21300"]' 
+}
+const start = options => {
+    // console.info('1.server start : ', options)
+   const server = main(options)
+   return server
+}
+// start({argv})
+/////////
+exports.start = start
